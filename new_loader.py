@@ -55,7 +55,7 @@ nextButton1_x, nextButton1_y = 956,615
 #Early termination 
 nextButton2_x, nextButton2_y = 950,975
 
-loading_screens = ['mainScreen','characterChoosing','redText','insuranceScreen','LFGScreen', 'killList', 'raidStats', 'expGained', 'characterHeal']
+loading_screens = ['characterChoosing','mapChoosing','redText','insuranceScreen','LFGScreen','earlyTermination', 'killList', 'raidStats', 'expGained', 'characterHeal','mainMenu']
 next_screens = ['characterChoosing','redText','insuranceScreen','LFGScreen']
 
 #def uninstall():
@@ -129,7 +129,7 @@ def click(x,y):
 
 async def click_next():
     while True:
-        time.sleep(0.7)
+        time.sleep(0.2)
         currentScreen = get_screen()
         print(currentScreen)
         
@@ -138,7 +138,6 @@ async def click_next():
           win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,nextButton1_x,nextButton1_y,0,0)
           win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,nextButton1_x,nextButton1_y,0,0)
           pyautogui.press('space')
-          time.sleep(0.5)
 
         elif currentScreen == 'mapChoosing':
           #Clicking interchange
@@ -184,7 +183,7 @@ def get_screen():
     s.connect(('139.162.246.238', 8748)) 
         
     #Taking screenshot // Insert area 
-    img = pyautogui.screenshot('template1.jpeg',region=(650, 30, 600, 50))
+    img = pyautogui.screenshot('template1.jpeg',region=(800, 52, 300, 30))
     img = open("template1.jpeg", 'rb')
 
     #Sending picture to server
