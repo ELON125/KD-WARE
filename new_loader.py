@@ -2,16 +2,12 @@ import asyncio
 import datetime
 import pymongo, dns
 from pymongo import MongoClient
-from pyfiglet import Figlet
-from colorama import Fore, Back, Style
 import pyautogui
 import socket 
 import subprocess
 import datetime
 import threading
-from pynput import mouse, keyboard
 import base64
-import zmq
 import time
 import win32api, win32con
 import keyboard
@@ -19,6 +15,9 @@ import os
 import sys
 from os import remove
 from sys import argv
+import cv2
+import numpy as np
+
 
 #If this doesnt work just make a recording with mouse movement when loading into raid and loop it(Ez way)
 #Run in seperate threads to find out what screen you are in, and to update current log
@@ -38,17 +37,9 @@ except Exception as e:
   sys.exit()
 
 #Connecting to server
-
-context = zmq.Context()
-print("[+]Connecting to server…")
-socket = context.socket(zmq.REQ)
-socket.connect("tcp://localhost:5421064")
-print("[+]Connected to server")
 os.system('cls')
 
 #Make a hwid check to  make sure they match
-
-custom_fig = Figlet(font='smslant')
 current_screen  = 'None'
 desired_kd = 0
 version = '0.1'
@@ -57,18 +48,18 @@ ping = '0'
 
 #Next button
 nextButton_x, nextButton_y = 954,939
-
+ 
 #Main screen
-nextButton1_x, nextButton1_y = 925,645
+nextButton1_x, nextButton1_y = 956,615
 
 #Early termination 
 nextButton2_x, nextButton2_y = 950,975
 
-loading_screens = ['characterChoosing','redText','insuranceScreen','LFGScreen', 'killList', 'raidStats', 'expGained', 'characterHeal']
+loading_screens = ['mainScreen','characterChoosing','redText','insuranceScreen','LFGScreen', 'killList', 'raidStats', 'expGained', 'characterHeal']
 next_screens = ['characterChoosing','redText','insuranceScreen','LFGScreen']
 
-def uninstall():
-  remove(argv[0])
+#def uninstall():
+  #remove(argv[0]) 
 
 
 async def startup():  
@@ -76,7 +67,7 @@ async def startup():
   current_screen = 'startup'
   
   #Printing logging message
-  print(Fore.RED + custom_fig.renderText('KD WARE'))
+  print('KD WARE:')
   key = input('[+]Key:\n')
 
   #Checking if key is in database/check if right hwid
@@ -97,7 +88,7 @@ async def startup():
       sys.exit()
       
     if str(fetched_ip) == str(ip) and str(fetched_hwid) == str(hwid):
-    
+     
       #Checking if key is expired
       if datetime.datetime.now() > datetime.datetime.strptime(str(expirationDate), "%Y-%m-%d %H:%M:%S.%f"):
         pyautogui.alert('Key expired')
@@ -116,34 +107,38 @@ async def startup():
       
   else:
     pyautogui.alert('Key not valid')
-    remove(argv[0])
+    #remove(argv[0])
 
 async def main_screen(fetched_ip,fetched_hwid):
   os.system('cls')
   current_screen = 'main_screen'
   
 	#Printing main menu
-  print(Fore.RED + custom_fig.renderText('KD WARE'))
+  print('KD WARE:')
   print(f'Ip: {fetched_ip}')
   print(f'HWID: {fetched_hwid}')
   print('[+]Toggle')
   input('')
+  print('[+]Connecting to server...')
   await click_next()
 
 def click(x,y):
-    print('clicking')
     win32api.SetCursorPos((x,y))
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,x,y,0,0)
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,x,y,0,0)
 
 async def click_next():
     while True:
-        currentScreen = await get_screen()
-        print('Getting ready to click')
+        time.sleep(0.7)
+        currentScreen = get_screen()
+        print(currentScreen)
         
         if currentScreen == 'loadingScreen':
+          win32api.SetCursorPos((nextButton1_x,nextButton1_y))
+          win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,nextButton1_x,nextButton1_y,0,0)
+          win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,nextButton1_x,nextButton1_y,0,0)
           pyautogui.press('space')
-          time.sleep(1)
+          time.sleep(0.5)
 
         elif currentScreen == 'mapChoosing':
           #Clicking interchange
@@ -154,10 +149,10 @@ async def click_next():
           time.sleep(0.3)
 
           #Clicking next 
-          x,y = nextButton_x, nextButton_y
+          x,y = nextButton_x, nextButton_y 
           click(x,y)
 
-        elif currentScreen == 'mainMenu':
+        elif currentScreen in 'mainMenu': 
           x,y = nextButton1_x, nextButton1_y
           click(x,y)
         
@@ -173,7 +168,7 @@ async def click_next():
             await asyncio.sleep(1)
 
 async def update():
-  while True:
+  while True: 
     os.system('cls')
     print(Fore.RED + custom_fig.renderText('KD WARE'))
     print(f'[+]Ping - {ping}')
@@ -181,33 +176,33 @@ async def update():
     await asyncio.sleep(1)
 
 
-async def get_screen():
+def get_screen():
     #Writing down current time
     now = datetime.datetime.now()
-    
+   
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(('139.162.246.238', 8748)) 
+        
     #Taking screenshot // Insert area 
-    img = pyautogui.screenshot('template.jpeg',region=(830, 50, 250, 25))
-    img = open("template.jpeg", 'rb')
+    img = pyautogui.screenshot('template1.jpeg',region=(650, 30, 600, 50))
+    img = open("template1.jpeg", 'rb')
 
     #Sending picture to server
-    print('Sending picture to server')
     bytes = bytearray(img.read())
-    strng = base64.b64encode(bytes)
-    socket.send(strng)
+    strng = base64.b64encode(bytes)         
+    s.send(strng)
     img.close()
-    
-    reply = socket.recv()
+        
+    reply = s.recv(2048)
     current_screen = reply.decode()
-    print(current_screen) 
-    
-    
+        
     #Checking how long it took
-    ping = str(datetime.datetime.now() - now)
-    print(datetime.datetime.now() - now)
-    return current_screen
+    ping = str(datetime.datetime.now() - now)      
+    print(ping, current_screen)
+    return current_screen 
 
 keyboard.on_press_key("p", lambda _:os._exit(0))
 x = threading.Thread(target=update)
 asyncio.run(startup())
 
-
+ 

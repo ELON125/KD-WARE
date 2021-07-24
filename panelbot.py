@@ -18,9 +18,9 @@ from discord_components import DiscordComponents, Button, ButtonStyle
 from key_generator.key_generator import generate
 
 
-
+expirationDate = ''
 intents = discord.Intents.all()
-client = commands.Bot(command_prefix='.', intents=intents)
+client = commands.Bot(command_prefix='!!', intents=intents)
 client.remove_command('help')
 dbClient = MongoClient("mongodb+srv://D1P:D1P9812@hokuspokusdb.gehgp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 db = dbClient["ElonWare"]
@@ -58,6 +58,7 @@ async def gen(ctx):
   
 @client.event
 async def on_button_click(res):
+  global expirationDate
   #Mongodb also stores if its an int or string so makes sure message id is int if its stored like int in db 
   if EWEmbeds.count_documents({"message_id": str(res.message.id)}) > 0:
     for dbFind in EWEmbeds.find({"message_id": str(res.message.id)}):
@@ -81,7 +82,7 @@ async def on_button_click(res):
     sub_length = '30 Days'
     EWEmbeds.update_one(
       {"message_id":f"{res.message.id}"},
-      {"$set":{"sub_length":f"30 Days"}}
+      {"$set":{"sub_length":f"{datetime.timedelta(days=39) + datetime.datetime.now()}"}}
     )
     await res.respond(embed = discord.Embed(description='Subscription length changed to 30 days🕒'))
     await update()
@@ -89,9 +90,9 @@ async def on_button_click(res):
     sub_length = 'Lifetime'
     EWEmbeds.update_one(
       {"message_id":f"{res.message.id}"},
-      {"$set":{"sub_length":f"Lifetime"}}
+      {"$set":{"sub_length":f"{datetime.timedelta(days=999) + datetime.datetime.now()}"}}
     )
-    await res.respond(embed=discord.Embed(description='Subscription length changed to lifetime🪦'))
+    await res.respond(embed = discord.Embed(description='Subscription length changed to lifetime🪦'))
     await update()
   if res.component.label == 'Gen Key' and str(res.message.content) == str(reseller_id):
     log_channel = res.guild.get_channel(866366312506720276)
@@ -99,7 +100,7 @@ async def on_button_click(res):
     generated_key = generate(capital='mix') 
     
   
-    post = {'expirationDate':str(datetime.timedelta(days=30) + datetime.datetime.now()),'first_login':'True','Seller':str(res.user.id),'Buyer':str(costumer_id), 'hwid':'None', 'ip':'None', 'key':str(generated_key.get_key())}
+    post = {'expirationDate':str(sub_length),'first_login':'True','Seller':str(res.user.id),'Buyer':str(costumer_id), 'hwid':'None', 'ip':'None', 'key':str(generated_key.get_key())}
     
     await log_channel.send(embed = discord.Embed(title=f"{res.user}({res.user.id})\n\n", description = f'Subscription length: {sub_length}\nReseller ID: {reseller_id}\nCostumer ID:{costumer_id}\n\n', timestamp=datetime.datetime.now()).set_thumbnail(url=res.user.avatar_url).set_footer(text='K/D Ware', icon_url=res.guild.icon_url))
     
@@ -113,5 +114,10 @@ async def on_button_click(res):
   if res.component.label == 'Cancel' and str(res.message.content) == str(reseller_id):
     await res.message.delete()
     await res.respond(embed = discord.Embed(description='Key generation cancelled❌'))
+
+@client.command()
+@commands.has_permissions(ban_members=True, kick_members=True)
+async def clear(message, amount = 5):
+	await message.channel.purge(limit=amount)
   
 client.run("ODY2MzI5NzI0OTQ2MDg3OTc3.YPQ-bg.YGD2MNrNiAa0lZEkW4X0kaULYqA")
