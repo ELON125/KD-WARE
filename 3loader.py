@@ -141,8 +141,7 @@ def get_screen():
     else:pass
   curMap, x, y = s.recv(2048).decode('utf-8').split("//")
 
-  if curMap == 'mapChoosing':map_choosing()
-  else:return x,y, curMap
+  return x,y, curMap
 
 keyboard.on_press_key("p", lambda _:os._exit(0))
 asyncio.run(inDb_check())
