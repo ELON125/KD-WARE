@@ -1,13 +1,8 @@
-import socket 
-import cv2
-import numpy as np
-import threading 
-import base64
-import datetime
-import time
-import pytesseract
+import keyboard
 
-img = cv2.imread('test.jpeg')
+def main_screen():ppp
+    print('mniger')
+keyboard.add_hotkey('p', lambda: main_screen())
 
-text = pytesseract.image_to_string(img, config='--psm 3')
-print(text)
+while True:
+    hej = True
