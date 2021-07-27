@@ -15,7 +15,7 @@ import cv2
 import numpy as np
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind(('139.162.246.238', 8749))
+s.bind((socket.gethostname(), 8759))
 s.listen(5)
 print('[+]Server online: {}, Ver 3.2'.format('139.162.246.238'))
 
@@ -125,11 +125,5 @@ while True:
     try:
       message.decode('utf-8')
       checker()
-    except:
-      message = clientsocket.recv(40960000)
-      data = bytearray(message)
-      print(message.endswith(b'\xff\xd9'))
-      while message.endswith(b'\xff\xd9') != True:
-        message = clientsocket.recv(40960000)
-        data.extend(message)
+    except UnicodeDecodeError:
       get_screen()

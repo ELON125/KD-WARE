@@ -2,20 +2,27 @@ import asyncio
 import datetime
 import pymongo, dns
 from pymongo import MongoClient
+import pyautogui
 import socket 
 import subprocess
 import datetime
 import threading
 import base64
 import time
+import win32api, win32con
+import keyboard
 import os 
 import sys
 from os import remove
+from sys import argv
+import cv2
+import numpy as np
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind(('139.162.246.238', 8749))
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+s.bind((socket.gethostname(), 8748))
 s.listen(5)
-print(f'[+]Server online: 139.162.246.238:8748, Ver 3.2')
+print(f'[+]Server online: 139.162.246.238:8748, Ver 3.1')
 
 dbClient = MongoClient(
     "mongodb+srv://D1P:D1P9812@hokuspokusdb.gehgp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
@@ -45,15 +52,6 @@ while True:
 
     print(message)
     def checker():
-      if 'GetLogin' in message:
-        cmd, fetched_hwid, fetched_ip = message.split("//")
-        if elonware_db.count_documents({"hwid": f"{fetched_hwid}"}) > 0:
-          for dbFind in elonware_db.find({"hwid":fetched_hwid}):
-            first_login = dbFind["first_login"]
-          clientsocket.send(f'{first_login}'.encode('utf-8'))
-        else: clientsocket.send(f'True'.encode('utf-8'))
-
-
       if 'GetVars' in message:
           cmd, fetched_hwid, fetched_ip, key = message.split("//")
           if elonware_db.count_documents({"key": f"{key}"}) > 0:
@@ -63,16 +61,9 @@ while True:
                   hwid = dbFind['hwid']
                   ip = dbFind['ip']
 
-              if first_login == 'True':
-                elonware_db.update_one(
-                  {"key": f"{key}"},
-                  {"$set":{"hwid":f"{fetched_hwid}", "ip":f"{fetched_ip}","first_login":"False"}}
-                )
-
-              if str(fetched_ip) == str(ip) and str(fetched_hwid) == str(hwid):
+              if str(fetched_ip) == str(ip):
                   HwidIpCheck = 'True'
-              else: 
-                HwidIpCheck = 'True'
+              else: HwidIpCheck = 'False'
 
               if datetime.datetime.now() > datetime.datetime.strptime(str(expirationDate), "%Y-%m-%d %H:%M:%S.%f"):
                   expiredCheck = 'False'
