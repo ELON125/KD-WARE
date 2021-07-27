@@ -37,7 +37,6 @@ except Exception as e:
 async def inDb_check():
   s.sendall(f'GetLogin//{fetched_hwid}//{fetched_ip}'.encode('utf-8'))
   first_login = s.recv(2048).decode('utf-8')
-  print(first_login)
   if first_login == 'False':
     main_screen(fetched_ip, fetched_hwid)
   else: await bootup()

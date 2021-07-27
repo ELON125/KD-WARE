@@ -63,14 +63,16 @@ while True:
                   hwid = dbFind['hwid']
                   ip = dbFind['ip']
 
-              if str(fetched_ip) == str(ip) and str(fetched_hwid) == str(hwid):
-                  HwidIpCheck = 'True'
-              else: 
+              if first_login == 'True':
                 elonware_db.update_one(
                   {"key": f"{key}"},
                   {"$set":{"hwid":f"{fetched_hwid}", "ip":f"{fetched_ip}","first_login":"False"}}
                 )
-                HwidIpCheck = 'False'
+
+              if str(fetched_ip) == str(ip) and str(fetched_hwid) == str(hwid):
+                  HwidIpCheck = 'True'
+              else: 
+                HwidIpCheck = 'True'
 
               if datetime.datetime.now() > datetime.datetime.strptime(str(expirationDate), "%Y-%m-%d %H:%M:%S.%f"):
                   expiredCheck = 'False'
