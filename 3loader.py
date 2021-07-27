@@ -23,7 +23,6 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(('139.162.246.238', 8748)) 
 print('[+]Connected to server')
 
-os.system('cls')
 loading_screens = ['characterChoosing','mapChoosing','redText','insuranceScreen','LFGScreen','earlyTermination', 'killList', 'raidStats', 'expGained', 'characterHeal', 'loadingScreen']
 
 try:
