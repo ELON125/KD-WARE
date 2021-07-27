@@ -122,7 +122,7 @@ while True:
       message.decode("utf-8")
       checker()
     except UnicodeDecodeError:
-      while True:
+      while message.endswith(b'\xff\xd9') != True:
         message = clientsocket.recv(40960000)
         if not message:break
         my_file = open("template1.jpeg", 'wb')
