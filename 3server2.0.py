@@ -15,7 +15,7 @@ import cv2
 import numpy as np
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind(('139.162.246.238', 8749))
+s.bind((socket.gethostname(), 8749))
 s.listen(5)
 print('[+]Server online: {}, Ver 3.2'.format('139.162.246.238'))
 
@@ -78,9 +78,6 @@ while True:
 
     def get_screen():
         now = datetime.datetime.now()
-        my_file = open("template1.jpeg", 'wb')
-        my_file.write(bytes(message))
-        my_file.close()
           
         template = cv2.imread("template1.jpeg",0)
 
@@ -118,18 +115,17 @@ while True:
     clientsocket, address = s.accept()
     message = clientsocket.recv(40960000)
 
-
     print(f'[+]Recieved Message from {address}')
     print(message)
 
     try:
-      message.decode('utf-8')
+      message.decode("utf-8")
       checker()
-    except:
-      message = clientsocket.recv(40960000)
-      data = bytearray(message)
-      print(message.endswith(b'\xff\xd9'))
-      while message.endswith(b'\xff\xd9') != True:
+    except UnicodeDecodeError:
+      while True:
         message = clientsocket.recv(40960000)
-        data.extend(message)
+        if not message:break
+        my_file = open("template1.jpeg", 'wb')
+        my_file.write(bytes(message))
+        my_file.close()
       get_screen()
