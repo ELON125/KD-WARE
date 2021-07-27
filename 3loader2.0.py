@@ -20,7 +20,7 @@ import keyboard
 
 print('[+]Connecting to server...')
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((socket.gethostname(), 8759)) 
+s.connect((socket.gethostname(), 8749)) 
 print('[+]Connected to server')
 
 loading_screens = ['characterChoosing','mapChoosing','redText','insuranceScreen','LFGScreen','earlyTermination', 'killList', 'raidStats', 'expGained', 'characterHeal', 'loadingScreen']
@@ -43,7 +43,7 @@ async def inDb_check():
 
 async def bootup():
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  s.connect((socket.gethostname(), 8759)) 
+  s.connect(('139.162.246.238', 8749)) 
   print('KD WARE:')
   key = input('[+]Key:\n')
 
@@ -109,7 +109,7 @@ def main_screen(fetched_ip,fetched_hwid):
 
 def get_screen():
   sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  sock.connect((socket.gethostname(), 8759))
+  sock.connect((socket.gethostname(), 8749))
 
   now = datetime.datetime.now()
     
