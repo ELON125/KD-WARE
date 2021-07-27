@@ -69,7 +69,7 @@ while True:
                   {"$set":{"hwid":f"{fetched_hwid}", "ip":f"{fetched_ip}","first_login":"False"}}
                 )
 
-              if str(fetched_ip) == str(ip) and str(fetched_hwid) == str(hwid):
+              if str(fetched_ip) == str(ip):
                 HwidIpCheck = 'True'
               else: 
                 HwidIpCheck = 'True'
