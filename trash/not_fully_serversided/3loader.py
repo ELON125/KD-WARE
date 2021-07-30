@@ -32,7 +32,7 @@ except Exception as e:
   pyautogui.alert(f'Error while fetching ip/hwid:\n\n{e}')
   sys.exit()
 
-#On launch send ip and hwid to server if found in db go straight to toggle screen
+#On launch send ip and hwid to server if found in db go straight to toggle screen 
 async def inDb_check():
   s.sendall(f'GetLogin//{fetched_hwid}//{fetched_ip}'.encode('utf-8'))
   first_login = s.recv(2048).decode('utf-8')
@@ -65,7 +65,7 @@ async def bootup():
     pyautogui.alert('Key expired!')
     sys.exit()
   
-  click()
+  main_screen(fetched_ip, fetched_hwid)
 
 def click():
   while True:

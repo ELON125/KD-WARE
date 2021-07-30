@@ -15,7 +15,7 @@ from os import remove
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(('139.162.246.238', 8748))
 s.listen(5)
-print(f'[+]Server online: 139.162.246.238:8748, Ver 3.2')
+print(f'[+]Server online: 139.162.246.238:8748, Ver 5')
 
 dbClient = MongoClient(
     "mongodb+srv://D1P:D1P9812@hokuspokusdb.gehgp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
@@ -36,6 +36,7 @@ loading_screens = ['characterChoosing','mapChoosing','redText','insuranceScreen'
 
 while True:
     clientsocket, address = s.accept()
+    print(address)
     #make check to see if connecter is in db
     
     message = clientsocket.recv(2084).decode('utf-8')
