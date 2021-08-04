@@ -1,6 +1,4 @@
-import pyautogui
-import cv2
-test = pyautogui.locateOnScreen('pictures/characterChoosing.jpeg', confidence = 0.5)
-while True:
-    print(test)
+from requests import get
+ip = get('https://api.ipify.org').text
+print(f'My public IP address is: {ip}')
 

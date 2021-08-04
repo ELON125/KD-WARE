@@ -12,10 +12,12 @@ import os
 import sys
 from os import remove
 
+#added a check if the requesting ip is in the database so noone missuses
+
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(('139.162.246.238', 8748))
 s.listen(5)
-print(f'[+]Server online: 139.162.246.238:8748, Ver 5')
+print(f'[+]Server online: 139.162.246.238:8748, Ver 1.0')
 
 dbClient = MongoClient(
     "mongodb+srv://D1P:D1P9812@hokuspokusdb.gehgp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
@@ -37,6 +39,9 @@ loading_screens = ['characterChoosing','mapChoosing','redText','insuranceScreen'
 while True:
     clientsocket, address = s.accept()
     print(address)
+
+    if elonware_db.count_documents({"ip": f"{address}"}) > 0:continue
+    else:pass
     #make check to see if connecter is in db
     
     message = clientsocket.recv(2084).decode('utf-8')
@@ -46,6 +51,13 @@ while True:
 
     print(message)
     def checker():
+      if 'UpdateCheck' in message:
+        cmd, clientVer = message.split("//")
+        for dbFind in elonware_db.find({"versionChecker":'True'}):
+            serverVer = dbFind["version"]
+        if clientVer != serverVer:clientsocket.send('Update'.encode('utf-8'))
+        else:clientsocket.send('Newest version installed'.encode('utf-8'))
+
       if 'GetLogin' in message:
         cmd, fetched_hwid, fetched_ip = message.split("//")
         if elonware_db.count_documents({"hwid": f"{fetched_hwid}"}) > 0:

@@ -9,6 +9,8 @@ import datetime
 import threading
 import base64
 import time
+
+from urllib3 import response
 import win32api, win32con
 import os 
 import sys
@@ -17,17 +19,38 @@ from sys import argv
 import cv2
 import numpy as np
 import keyboard
+from mega import Mega
+from requests import get
+
+#Updates
+#-Added auto update(needs to be completed)
+#-Added propper ip grabber that gets the public ipv4
+#-Needed add so the bot auto finds where mainscreen button is and next button
+
+mega = Mega()
+m = mega.login()
+
+ver = 1.0
 
 print('[+]Connecting to server...')
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(('139.162.246.238', 8748)) 
 print('[+]Connected to server')
 
+#Make it so if version it outdated, this program bytestreams the updater, then when the updater is launcher it will delet eall files in the folder named, pictures, and kd-ware. Then after it installs from the mega thing
+#Send a request to the server if loader should update or not 
+print('[+]Checking for newest version')
+s.sendall(f'UpdateCheck//{ver}'.encode('utf-8'))
+loginCheck = s.recv(2048).decode('utf-8')
+if str(loginCheck) == 'Update':
+  m.download_url('https://mega.nz/folder/nctHGabQ#G82yTwt4WwE0qQYvGC-pBQ', f'KD-WARE LOADER {ver+0.1}')
+  #remove all other files and in the end remove itself
+
 loading_screens = ['characterChoosing','mapChoosing','redText','insuranceScreen','LFGScreen','earlyTermination', 'killList', 'raidStats', 'expGained', 'characterHeal', 'loadingScreen']
 
 try:
   fetched_hwid = str(subprocess.check_output('wmic csproduct get uuid'), 'utf-8').split('\n')[1].strip()
-  fetched_ip = [l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]) if l][0][0]
+  fetched_ip = get('https://api.ipify.org').text
 except Exception as e:
   pyautogui.alert(f'Error while fetching ip/hwid:\n\n{e}')
   sys.exit()
