@@ -53,7 +53,7 @@ while True:
     def checker():
       if 'UpdateCheck' in message:
         cmd, clientVer = message.split("//")
-        for dbFind in elonware_db.find({"versionChecker":'True'}):
+        for dbFind in elonware_db.find({"serverVars"}):
             serverVer = dbFind["version"]
         if clientVer != serverVer:clientsocket.send('Update'.encode('utf-8'))
         else:clientsocket.send('Newest version installed'.encode('utf-8'))
@@ -65,7 +65,6 @@ while True:
             first_login = dbFind["first_login"]
           clientsocket.send(f'{first_login}'.encode('utf-8'))
         else: clientsocket.send(f'True'.encode('utf-8'))
-
 
       if 'GetVars' in message:
           cmd, fetched_hwid, fetched_ip, key = message.split("//")
@@ -94,6 +93,16 @@ while True:
               clientsocket.send(f'{first_login}//{HwidIpCheck}//{expiredCheck}//Valid'.encode('utf-8'))
           else:
             clientsocket.send(f'0//0//0//0'.encode('utf-8'))
+
+      if 'UpdateVars_MessageCheck' in message:
+        for dbFind in elonware_db.find({"serverVars"}):
+            server_message = dbFind["message"]
+        cmd, key, version, curTime = message.split('//')
+        elonware_db.update_one(
+          {"key": f"{key}"},
+          {"$set":{"current_version":f"{version}", "latest_login":f"{curTime}"}}
+        )
+        clientsocket.send(f'{server_message}//Updated'.encode('utf-8'))
 
       if 'pic' in message:
           command, currentScreen = message.split("//")

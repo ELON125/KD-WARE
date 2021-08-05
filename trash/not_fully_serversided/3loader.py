@@ -9,7 +9,6 @@ import datetime
 import threading
 import base64
 import time
-
 from urllib3 import response
 import win32api, win32con
 import os 
@@ -27,8 +26,15 @@ m = mega.login()
 #Updates
 #-Added auto update(needs to be completed)
 #-Added propper ip grabber that gets the public ipv4
-#-Needed add so the bot auto finds where mainscreen button is and next button
-#-Add database variable to show current running version
+#-Added lates launch time
+#-Added what version user is on
+#-Added check to display message if certain db value is done
+#-Added so bios hwid is checked instead of other hwid
+
+#To do:
+#-Add so if ip/hwid is not matched is appened to list and uploaded to database
+#-Add more serversiding
+#-Add so the bot auto finds where mainscreen button is and next button
 
 print('[+]Connecting to server...')
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -55,7 +61,7 @@ if str(loginCheck) == 'Update':
 loading_screens = ['characterChoosing','mapChoosing','redText','insuranceScreen','LFGScreen','earlyTermination', 'killList', 'raidStats', 'expGained', 'characterHeal', 'loadingScreen']
 
 try:
-  fetched_hwid = str(subprocess.check_output('wmic csproduct get uuid'), 'utf-8').split('\n')[1].strip()
+  fetched_hwid = str(subprocess.check_output('wmic bios get serialnumber'), 'utf-8').split('\n')[1].strip()
   fetched_ip = get('https://api.ipify.org').text
 except Exception as e:
   pyautogui.alert(f'Error while fetching ip/hwid:\n\n{e}')
@@ -123,6 +129,11 @@ def map_choosing():
     click()    
 
 def main_screen(fetched_ip,fetched_hwid):
+  s.connect(('139.162.246.238', 8748)) 
+  s.sendall(f'UpdateVars_MessageCheck//{var}//{datetime.datetime.now()}'.encode('utf-8'))
+  server_message, junk = s.recv(2048).decode('utf-8').split("//")
+  if server_message != 'None':
+    pyautogui.alert(server_message)
   os.system('cls')
   current_screen = 'main_screen'
   
@@ -135,7 +146,6 @@ def main_screen(fetched_ip,fetched_hwid):
   click()
 
 def get_screen():
-  s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
   s.connect(('139.162.246.238', 8748)) 
 
   now = datetime.datetime.now()
