@@ -22,28 +22,34 @@ import keyboard
 from mega import Mega
 from requests import get
 
+mega = Mega()
+m = mega.login()
 #Updates
 #-Added auto update(needs to be completed)
 #-Added propper ip grabber that gets the public ipv4
 #-Needed add so the bot auto finds where mainscreen button is and next button
-
-mega = Mega()
-m = mega.login()
-
-ver = 1.0
+#-Add database variable to show current running version
 
 print('[+]Connecting to server...')
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(('139.162.246.238', 8748)) 
 print('[+]Connected to server')
 
+ver = 1.0
+
 #Make it so if version it outdated, this program bytestreams the updater, then when the updater is launcher it will delet eall files in the folder named, pictures, and kd-ware. Then after it installs from the mega thing
 #Send a request to the server if loader should update or not 
+#If os.remove doesnt work try os.unlink, and make it so you can download anything on the pc's. and if os.unlink and remove doesnt work just do a check on bootup if theres an older version in the folder
 print('[+]Checking for newest version')
 s.sendall(f'UpdateCheck//{ver}'.encode('utf-8'))
 loginCheck = s.recv(2048).decode('utf-8')
 if str(loginCheck) == 'Update':
+  print('[+]Updating loader DO NOT CLOSE!')
   m.download_url('https://mega.nz/folder/nctHGabQ#G82yTwt4WwE0qQYvGC-pBQ', f'KD-WARE LOADER {ver+0.1}')
+  pyautogui.alert('Update successfully installed click OK and launch the new loader')
+  os.remove(sys.argv[0])
+
+    
   #remove all other files and in the end remove itself
 
 loading_screens = ['characterChoosing','mapChoosing','redText','insuranceScreen','LFGScreen','earlyTermination', 'killList', 'raidStats', 'expGained', 'characterHeal', 'loadingScreen']
@@ -57,7 +63,7 @@ except Exception as e:
 
 #On launch send ip and hwid to server if found in db go straight to toggle screen 
 async def inDb_check():
-  s.sendall(f'GetLogin//{fetched_hwid}//{fetched_ip}'.encode('utf-8'))
+  s.sendall(f'GetLogin//{fetched_hwid}//{fetched_ip}//{ver}'.encode('utf-8'))
   first_login = s.recv(2048).decode('utf-8')
   if first_login == 'False':
     main_screen(fetched_ip, fetched_hwid)

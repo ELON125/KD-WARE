@@ -59,7 +59,7 @@ while True:
         else:clientsocket.send('Newest version installed'.encode('utf-8'))
 
       if 'GetLogin' in message:
-        cmd, fetched_hwid, fetched_ip = message.split("//")
+        cmd, fetched_hwid, fetched_ip, curVer = message.split("//")
         if elonware_db.count_documents({"hwid": f"{fetched_hwid}"}) > 0:
           for dbFind in elonware_db.find({"hwid":fetched_hwid}):
             first_login = dbFind["first_login"]
