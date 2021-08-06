@@ -12,7 +12,11 @@ import os
 import sys
 from os import remove
 
-#added a check if the requesting ip is in the database so noone missuses
+#-Added a check if the requesting ip is in the database so noone missuses
+#-Added key+name when request is send to server 
+
+#Working on
+#-Add so if new ip/hwid is logged in with append to list and upload to server
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(('139.162.246.238', 8748))
@@ -39,10 +43,6 @@ loading_screens = ['characterChoosing','mapChoosing','redText','insuranceScreen'
 while True:
     clientsocket, address = s.accept()
     print(address)
-
-    if elonware_db.count_documents({"ip": f"{address}"}) > 0:continue
-    else:pass
-    #make check to see if connecter is in db
     
     message = clientsocket.recv(2084).decode('utf-8')
     print(f'[+]Recieved Message from {address}')
@@ -106,6 +106,8 @@ while True:
 
       if 'pic' in message:
           command, currentScreen = message.split("//")
+          if elonware_db.count_documents({"ip": f"{address}"}) > 0:continue
+          else:pass
           if currentScreen == 'loadingScreen':
             clientsocket.send(f'loadingScreen//{nextButton1_x}//{nextButton1_y}'.encode('utf-8'))
 

@@ -100,9 +100,9 @@ async def on_button_click(res):
     generated_key = generate(capital='mix') 
     
   
-    post = {'expirationDate':str(sub_length),'first_login':'True','Seller':str(res.user.id),'Buyer':str(costumer_id), 'hwid':'None', 'ip':'None', 'key':str(generated_key.get_key())}
+    post = {'expirationDate':str(sub_length),'first_login':'True','Seller':str(res.user.id),'Buyer':str(costumer_id),'Buyer_name':f'{user}', 'hwid':'None', 'ip':'None', 'key':str(generated_key.get_key())}
     
-    await log_channel.send(embed = discord.Embed(title=f"{res.user}({res.user.id})\n\n", description = f'Subscription length: {sub_length}\nReseller ID: {reseller_id}\nCostumer ID:{costumer_id}\n\n', timestamp=datetime.datetime.now()).set_thumbnail(url=res.user.avatar_url).set_footer(text='K/D Ware', icon_url=res.guild.icon_url))
+    await log_channel.send(embed = discord.Embed(title=f"{res.user}({res.user.id})\n\n", description = f'Subscription length: {sub_length}\nReseller ID: {reseller_id}\nCostumer ID:{costumer_id}\nCostumer Name:{user}\n\n', timestamp=datetime.datetime.now()).set_thumbnail(url=res.user.avatar_url).set_footer(text='K/D Ware', icon_url=res.guild.icon_url))
     
     await res.respond(embed=discord.Embed(description='Sending key to you now🔑'))
     
