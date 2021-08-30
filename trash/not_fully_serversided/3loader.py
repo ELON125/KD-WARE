@@ -36,6 +36,7 @@ m = mega.login()
 #-Add more serversiding
 #-Add so the bot auto finds where mainscreen button is and next button
 
+#To get timeout for server connecting look here = https://www.bogotobogo.com/python/Multithread/python_multithreading_Daemon_join_method_threads.php
 print('[+]Connecting to server...')
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(('139.162.246.238', 8748)) 
@@ -46,19 +47,18 @@ ver = 1.0
 #Make it so if version it outdated, this program bytestreams the updater, then when the updater is launcher it will delet eall files in the folder named, pictures, and kd-ware. Then after it installs from the mega thing
 #Send a request to the server if loader should update or not 
 #If os.remove doesnt work try os.unlink, and make it so you can download anything on the pc's. and if os.unlink and remove doesnt work just do a check on bootup if theres an older version in the folder
-print('[+]Checking for newest version')
-s.sendall(f'UpdateCheck//{ver}'.encode('utf-8'))
-loginCheck = s.recv(2048).decode('utf-8')
-if str(loginCheck) == 'Update':
-  print('[+]Updating loader DO NOT CLOSE!')
-  m.download_url('https://mega.nz/folder/nctHGabQ#G82yTwt4WwE0qQYvGC-pBQ', f'KD-WARE LOADER {ver+0.1}')
-  pyautogui.alert('Update successfully installed click OK and launch the new loader')
-  os.remove(sys.argv[0])
+#remove all other files and in the end remove itself
 
-    
-  #remove all other files and in the end remove itself
+#Next button
+nextButton_x, nextButton_y = 954,939
+ 
+#Main screen
+nextButton1_x, nextButton1_y = 956,615
 
-loading_screens = ['characterChoosing','mapChoosing','redText','insuranceScreen','LFGScreen','earlyTermination', 'killList', 'raidStats', 'expGained', 'characterHeal', 'loadingScreen']
+#Early termination 
+nextButton2_x, nextButton2_y = 950,975
+
+loading_screens = ['characterChoosing','mapChoosing','redText','insuranceScreen','LFGScreen','earlyTermination', 'killList', 'raidStats', 'expGained', 'characterHeal']
 
 try:
   fetched_hwid = str(subprocess.check_output('wmic bios get serialnumber'), 'utf-8').split('\n')[1].strip()
@@ -95,7 +95,7 @@ async def bootup():
     pyautogui.alert('Hwid/ip missmatch')
     sys.exit()
 
-    #Checking if expired
+  #Checking if expired
   if expiredCheck == 'False':
     pyautogui.alert('Key expired!')
     sys.exit()
@@ -145,6 +145,22 @@ def main_screen(fetched_ip,fetched_hwid):
   print('[+]Starting bot')
   click()
 
+def get_curScreen(x):
+  if x == 'loadingScreen':
+    return 'loadingScreen', nextButton1_x, nextButton1_y
+
+  elif x == 'mapChoosing':
+    return 'mapChoosing',0,0
+          
+  elif x in loading_screens: 
+    return x,nextButton_x, nextButton_y
+              
+  elif x == 'earlyTermination':
+    return 'earlyTermination', nextButton2_x, nextButton2_y
+          
+  else:
+    return 0,0,0
+
 def get_screen():
   s.connect(('139.162.246.238', 8748)) 
 
@@ -173,11 +189,10 @@ def get_screen():
     # Store the coordinates of matched area in a numpy array
     loc = np.where( res >= threshold)
     if str(loc) != "(array([], dtype=int64), array([], dtype=int64))":
-      s.sendall(f"pic//{x}".encode('utf-8'))
       break
     else:pass
-  curMap, x, y = s.recv(2048).decode('utf-8').split("//")
 
+  curMap, x, y = get_curScreen(x)
   return x,y, curMap
 
 keyboard.on_press_key("p", lambda _:os._exit(0))

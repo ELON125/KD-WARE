@@ -103,23 +103,4 @@ while True:
           {"$set":{"current_version":f"{version}", "latest_login":f"{curTime}"}}
         )
         clientsocket.send(f'{server_message}//Updated'.encode('utf-8'))
-
-      if 'pic' in message:
-          command, currentScreen = message.split("//")
-          if elonware_db.count_documents({"ip": f"{address}"}) > 0:continue
-          else:pass
-          if currentScreen == 'loadingScreen':
-            clientsocket.send(f'loadingScreen//{nextButton1_x}//{nextButton1_y}'.encode('utf-8'))
-
-          elif currentScreen == 'mapChoosing':
-            clientsocket.send(f'mapChoosing//0//0'.encode('utf-8'))
-          
-          elif currentScreen in loading_screens: 
-            clientsocket.send(f'{currentScreen}//{nextButton_x}//{nextButton_y}'.encode('utf-8'))
-              
-          elif currentScreen == 'earlyTermination':
-            clientsocket.send(f'earlyTermination//{nextButton2_x}//{nextButton2_y}'.encode('utf-8'))
-          
-          else:
-              clientsocket.send(f'0//0//0'.encode('utf-8'))
     checker()
